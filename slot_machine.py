@@ -7,11 +7,12 @@
                         a random output based on probability, the end result will most likely end
                         in the user running out of money to bet.
                         
-    VERSION 0.2: Added Tkinter Functionality with slot_machine.py.
-                    - Added Main Image background
-                    - Added 4 Bet Buttons + Spin Button
-                    - Added 3 Label Reels for Image location
-                    - Disabled Text Mode slot
+    VERSION 0.3: Added A Money and Bet Amount Labels
+                    - Bet Labels now display how much user bets
+                    - Removed Slot Labels and replaced them as images
+                    - Buttons have been move slightly
+                    - Imported Berries.png with Transparency
+
     
 """
 
@@ -22,9 +23,10 @@ from Tkinter import *
 from PIL import Image, ImageTk
 
 class SlotMachine:
+    
     def __init__(self, master=None):
-        self.buttonFont = "-family Forte -size 22 -weight normal -slant roman -underline 0 -overstrike 0"
 
+        self.buttonFont = "-family Forte -size 22 -weight normal -slant roman -underline 0 -overstrike 0"
         
         # Display the Slot Machine Image on a Canvas Panel
         self.bg_panel = Canvas(master, width=640, height=480, bg="black")
@@ -34,22 +36,63 @@ class SlotMachine:
         self.bg_panel.create_image(0, 0, image = self.bg_imgTk, anchor = NW)
 
         #Display the Reel Slot
-        self.reel1 = Label(self.bg_panel)
-        self.reel1.place(x=200, y=150, height=65, width=65)
-        self.reel1_img = PhotoImage(file="images/reelslot.gif")
-        self.reel1.configure(image=self.reel1_img)
+        self.reel1_img = Image.open("images/reelslot.gif")
+        self.reel1_imgTk = ImageTk.PhotoImage(self.reel1_img)
+        self.bg_panel.create_image(200, 150, image = self.reel1_imgTk, anchor = NW)
 
         #Display the Reel Slot
-        self.reel2 = Label(self.bg_panel)
-        self.reel2.place(x=290, y=150, height=65, width=65)
-        self.reel2_img = PhotoImage(file="images/reelslot.gif")
-        self.reel2.configure(image=self.reel2_img)
+        self.reel2_img = Image.open("images/reelslot.gif")
+        self.reel2_imgTk = ImageTk.PhotoImage(self.reel2_img)
+        self.bg_panel.create_image(290, 150, image = self.reel2_imgTk, anchor = NW)
 
         #Display the Reel Slot
-        self.reel3 = Label(self.bg_panel)
-        self.reel3.place(x=380, y=150, height=65, width=65)
-        self.reel3_img = PhotoImage(file="images/reelslot.gif")
-        self.reel3.configure(image=self.reel3_img)
+        self.reel3_img = Image.open("images/reelslot.gif")
+        self.reel3_imgTk = ImageTk.PhotoImage(self.reel3_img)
+        self.bg_panel.create_image(380, 150, image = self.reel3_imgTk, anchor = NW)
+
+        #Import Berries Image
+        self.berries_img = Image.open("images/berries.png")
+        self.berries_imgTk = ImageTk.PhotoImage(self.berries_img)
+
+        #Display Bet Amount
+        self.betAmount = Label (self.bg_panel)
+        self.betAmount.place(x=420,y=290,height=35,width=150)
+        self.betAmount.configure(background="#000000")
+        self.betAmount.configure(borderwidth="0")
+        self.betAmount.configure(font=self.buttonFont)
+        self.betAmount.configure(foreground="#ff0000")
+        self.betAmount.configure(anchor="n")
+        self.betAmount.configure(text="0000")
+
+        #Display Bet Label
+        self.betLabel = Label (self.bg_panel)
+        self.betLabel.place(x=320, y=290, height=35, width=50)
+        self.betLabel.configure(background="#000000")
+        self.betLabel.configure(borderwidth="0")
+        self.betLabel.configure(font=self.buttonFont)
+        self.betLabel.configure(foreground="#ff0000")
+        self.betLabel.configure(anchor="n")
+        self.betLabel.configure(text="Bet:")
+
+        #Display Money Amount
+        self.cashAmount = Label (self.bg_panel)
+        self.cashAmount.place(x=170,y=290,height=35,width=150)
+        self.cashAmount.configure(background="#000000")
+        self.cashAmount.configure(borderwidth="0")
+        self.cashAmount.configure(font=self.buttonFont)
+        self.cashAmount.configure(foreground="#ff0000")
+        self.cashAmount.configure(anchor="n")
+        self.cashAmount.configure(text="1000")
+
+        #Display Money Label
+        self.cashLabel = Label (self.bg_panel)
+        self.cashLabel.place(x=60, y=290, height=35, width=100)
+        self.cashLabel.configure(background="#000000")
+        self.cashLabel.configure(borderwidth="0")
+        self.cashLabel.configure(font=self.buttonFont)
+        self.cashLabel.configure(foreground="#ff0000")
+        self.cashLabel.configure(anchor="n")
+        self.cashLabel.configure(text="Cash:")
 
         # Display the Bet ALL button
         self.betAllButton = Button(self.bg_panel)
@@ -59,7 +102,7 @@ class SlotMachine:
         self.betAllButton.configure(image=self.betAllButton_img)
         self.betAllButton.configure(cursor="hand2")
         self.betAllButton.configure(font=self.buttonFont, compound="center", text="Bet All")
-        #self.betAllButton.bind("<Button-1>",self.ResetButtonClick)
+        self.betAllButton.bind("<Button-1>",self.betALL)
 
         # Display the Bet 100 button
         self.bet100Button = Button(self.bg_panel)
@@ -69,7 +112,7 @@ class SlotMachine:
         self.bet100Button.configure(image=self.bet100Button_img)
         self.bet100Button.configure(cursor="hand2")
         self.bet100Button.configure(font=self.buttonFont, compound="center", text="Bet 100")
-        #self.bet100Button.bind("<Button-1>",self.ResetButtonClick)
+        self.bet100Button.bind("<Button-1>",self.bet100)
 
         # Display the Bet 250 button
         self.bet250Button = Button(self.bg_panel)
@@ -79,7 +122,7 @@ class SlotMachine:
         self.bet250Button.configure(image=self.bet250Button_img)
         self.bet250Button.configure(cursor="hand2")
         self.bet250Button.configure(font=self.buttonFont, compound="center", text="Bet 250")
-        #self.bet250Button.bind("<Button-1>",self.ResetButtonClick)
+        self.bet250Button.bind("<Button-1>",self.bet250)
 
         # Display the Bet 500 button
         self.bet500Button = Button(self.bg_panel)
@@ -89,11 +132,11 @@ class SlotMachine:
         self.bet500Button.configure(image=self.bet500Button_img)
         self.bet500Button.configure(cursor="hand2")
         self.bet500Button.configure(font=self.buttonFont, compound="center", text="Bet 500")
-        #self.bet500Button.bind("<Button-1>",self.ResetButtonClick)
+        self.bet500Button.bind("<Button-1>",self.bet500)
 
         # Display the Spin button
         self.spinButton = Button(self.bg_panel)
-        self.spinButton.place(x=90, y=350, height=46, width=125)
+        self.spinButton.place(x=120, y=350, height=46, width=125)
         self.spinButton.configure(borderwidth="0")
         self.spinButton_img = PhotoImage(file="images/button.gif")
         self.spinButton.configure(image=self.spinButton_img)
@@ -101,6 +144,22 @@ class SlotMachine:
         self.spinButton.configure(font=self.buttonFont, compound="center", text="Spin")
         #self.spinButton.bind("<Button-1>",self.ResetButtonClick)
     
+    def bet100(self, event):
+        Player_Bet = 100
+        self.betAmount["text"] = Player_Bet
+        
+    def bet250(self, event):
+        Player_Bet = 250
+        self.betAmount["text"] = Player_Bet
+
+    def bet500(self, event):
+        Player_Bet = 500
+        self.betAmount["text"] = Player_Bet
+
+    def betALL(self, event):
+        Player_Bet = 1000
+        self.betAmount["text"] = Player_Bet
+
 
     def Reels():
             
@@ -223,15 +282,6 @@ class SlotMachine:
 
     def textSlot():
         """ The Main function that runs the game loop """
-        # Initial Values
-        Player_Money = 1000
-        Jack_Pot = 500
-        Turn = 1
-        Bet = 0
-        Prev_Bet=0
-        win_number = 0
-        loss_number = 0
-        
         # Flag to initiate the game loop
         KeepGoing = True
         
@@ -283,6 +333,15 @@ class SlotMachine:
         print("- Program Terminated -")
 
 def main():
+    # Initial Values
+    Player_Money = 1000
+    Jack_Pot = 500
+    Turn = 1
+    Bet = 0
+    Prev_Bet=0
+    win_number = 0
+    loss_number = 0
+    
     window = Tk()
     window.title("Don't Starve Slot Machine")
     window.geometry('640x480+532+0')
