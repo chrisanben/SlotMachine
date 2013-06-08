@@ -7,14 +7,8 @@
                         a random output based on probability, the end result will most likely end
                         in the user running out of money to bet.
                         
-    VERSION 0.5: The Big Info Update
-                    - Added Labels to Display when the player wins a Jackpot
-                    - Added a small label to display the change in cash after each spin
-                    - Minor move of the buttons to accomodate labels
-                    - Some minor documentation changes
-                    - Added a Retry/Quit Button. Quit does not like being local for some reason.
-                    - Game acknowledges you have less money than a betting button!
-
+    VERSION 1.0: The Small Documentary Update & Release
+                    - Added more Documentation and Released the Slot Machine!
     
 """
 
@@ -28,6 +22,7 @@ class SlotMachine:
     
     def __init__(self, master=None):
 
+        # Fonts used for the SlotMachine Game
         self.buttonFont = "-family Forte -size 22 -weight normal -slant roman -underline 0 -overstrike 0"
         self.displayFont = "-family Forte -size 18 -weight normal -slant roman -underline 0 -overstrike 0"
         self.winningFont = "-family Forte -size 14 -weight normal -slant roman -underline 0 -overstrike 0"
@@ -54,40 +49,31 @@ class SlotMachine:
         self.reel3_imgTk = ImageTk.PhotoImage(self.reel3_img)
         self.bg_panel.create_image(380, 150, image = self.reel3_imgTk, anchor = NW)
 
-        #Import Slot Images
+        #Import Slot Object Images
         self.berries_img = Image.open("images/berries.png")
         self.berries_imgTk = ImageTk.PhotoImage(self.berries_img)
-
         self.rot_img = Image.open("images/rot.png")
         self.rot_imgTk = ImageTk.PhotoImage(self.rot_img)
-
         self.seeds_img = Image.open("images/seeds.png")
         self.seeds_imgTk = ImageTk.PhotoImage(self.seeds_img)
-
         self.durian_img = Image.open("images/durian.png")
         self.durian_imgTk = ImageTk.PhotoImage(self.durian_img)
-
         self.carrot_img = Image.open("images/carrot.png")
         self.carrot_imgTk = ImageTk.PhotoImage(self.carrot_img)
-
         self.fruit_img = Image.open("images/fruit.png")
         self.fruit_imgTk = ImageTk.PhotoImage(self.fruit_img)
-
         self.egg_img = Image.open("images/egg.png")
         self.egg_imgTk = ImageTk.PhotoImage(self.egg_img)
-
         self.ham_img = Image.open("images/ham.png")
         self.ham_imgTk = ImageTk.PhotoImage(self.ham_img)
-
         self.waffles_img = Image.open("images/waffles.png")
         self.waffles_imgTk = ImageTk.PhotoImage(self.waffles_img)
-
         self.taffy_img = Image.open("images/taffy.png")
         self.taffy_imgTk = ImageTk.PhotoImage(self.taffy_img)
 
+        #Import Quit/Retry Button Images
         self.quitButton_img = Image.open("images/quit.png")
         self.quitButton_imgTk = ImageTk.PhotoImage(self.quitButton_img)
-
         self.retryButton_img = Image.open("images/retry.png")
         self.retryButton_imgTk = ImageTk.PhotoImage(self.retryButton_img)
 
@@ -176,7 +162,7 @@ class SlotMachine:
         self.quitButton.configure(image=self.quitButton_imgTk)
         self.quitButton.configure(cursor="hand2")
         self.quitButton.configure(background="black")
-        self.quitButton.bind("<Button-1>", lambda event: window.destroy())
+        self.quitButton.bind("<Button-1>", lambda event: window.destroy()) #Quit Program
 
         # Display the Retry button
         self.retryButton = Button(self.bg_panel)
@@ -237,85 +223,89 @@ class SlotMachine:
         self.spinButton.configure(font=self.buttonFont, compound="center", text="Spin")
         self.spinButton.bind("<Button-1>",self.spinReels)
 
+    # Sets Bet Label Amount to 100, if only player has over 100
     def bet100(self, event):
         if int(self.cashAmount["text"]) >= 100:
             self.betAmount["text"] = 100
-        
+
+    # Sets Bet Label Amount to 250, if only player has over 250    
     def bet250(self, event):
         if int(self.cashAmount["text"]) >= 250:
             self.betAmount["text"] = 250
 
+    # Sets Bet Label Amount to 500, if only player has over 500    
     def bet500(self, event):
         if int(self.cashAmount["text"]) >= 500:
             self.betAmount["text"] = 500
 
+    # Sets Bet Label Amount to 1000, if only player has over 1000
     def bet1000(self, event):
         if int(self.cashAmount["text"]) >= 1000:
             self.betAmount["text"] = 1000
 
+    #Resets Parameters, Labels and Displayed Images
     def retry(self, event):
+        #Set Texts to Starting Values
         self.cashAmount["text"] = 1000
         self.betAmount["text"] = "0000"
         self.displayLabel.configure(text="")
         self.winLabel.configure(text="")
 
+        #Delete everything in Canvas
         self.bg_panel.delete(ALL)
-        # Display the Slot Machine Image on a Canvas Panel
+        #Redraw Canvas with starting images
         self.bg_panel.create_image(0, 0, image = self.bg_imgTk, anchor = NW)
-
-        #Display the Reel Slot
         self.bg_panel.create_image(200, 150, image = self.reel1_imgTk, anchor = NW)
-
-        #Display the Reel Slot
         self.bg_panel.create_image(290, 150, image = self.reel2_imgTk, anchor = NW)
-
-        #Display the Reel Slot
         self.bg_panel.create_image(380, 150, image = self.reel3_imgTk, anchor = NW)
-
+        #Reenable all buttons
         self.bet100Button.configure(state=NORMAL)
         self.bet250Button.configure(state=NORMAL)
         self.bet500Button.configure(state=NORMAL)
         self.bet1000Button.configure(state=NORMAL)
 
+    #Does all of the work... Not that I wanted it to do that, but Events don't allow to return values.
+    #Takes values from the labels in the program as numeric values, uses those labels as storage while program leaves spinReels.
+    #At random selects 3 different outcomes for the reels, gives player reward based on bet. If player wins, player might get Jackpot.
     def spinReels(self, event):
+        #Pulls the bet amount, current jackpot and current cash amount from the Labels
         Cash = int(self.cashAmount["text"])
         Bet = int(self.betAmount["text"])
         Jackpot = int(self.jackpotAmount["text"])
+
+        #Checks if Player has clicked a bet amount higher than their cash amount
         BetOk = False
-    
         if Bet > Cash:
             BetOk = False
         else:
             BetOk = True
-
+            
+        #If Player has enough cash and the bet is valid continue
         if Cash >= 100 and Bet > 0 and BetOk == True:
-            # [0]Fruit, [1]Fruit, [2]Fruit
+            # Initialize variables
             Bet_Line = [" "," "," "]
             Outcome = [0,0,0]
             food = self.rot_imgTk
             winnings = 0
             win = False
+            cashText = ""
 
+            #Subtract and Add bet from Total Cash and into Jackpot
             Cash -= Bet
             Jackpot += (Bet/5)
 
+            #Delete everything in Canvas (So Images in previous spin dissapear)
             self.bg_panel.delete(ALL)
-            # Display the Slot Machine Image on a Canvas Panel
+            #Redraw Canvas with starting images
             self.bg_panel.create_image(0, 0, image = self.bg_imgTk, anchor = NW)
-
-            #Display the Reel Slot
             self.bg_panel.create_image(200, 150, image = self.reel1_imgTk, anchor = NW)
-
-            #Display the Reel Slot
             self.bg_panel.create_image(290, 150, image = self.reel2_imgTk, anchor = NW)
-
-            #Display the Reel Slot
             self.bg_panel.create_image(380, 150, image = self.reel3_imgTk, anchor = NW)
             
             # Spin those reels
             for spin in range(3):
                 Outcome[spin] = random.randrange(1,64,1)
-                # Spin those Reels!
+                # Spin those Reels! (With more outcomes and different chances)
                 if Outcome[spin] >= 1 and Outcome[spin] <=18:   # 28.13% Chance
                     Bet_Line[spin] = "Rot"
                     food = self.rot_imgTk
@@ -347,16 +337,18 @@ class SlotMachine:
                     Bet_Line[spin] = "Taffy"
                     food = self.taffy_imgTk
 
+                #Sets the images for the reels, starting from the leftmost going right
                 if spin == 0:
                     slot1 = self.bg_panel.create_image(202, 150, image = food, anchor = NW)
                 elif spin == 1:
                     slot2 = self.bg_panel.create_image(292, 150, image = food, anchor = NW)
                 elif spin == 2:
                     slot3 = self.bg_panel.create_image(382, 150, image = food, anchor = NW)      
-        
-
+            
+            #I wasn't sure, so I left this in to not have to retype, it just overtakes Bet_Lines values for later use.
             Food_Reel = Bet_Line
 
+            #Check if any reels are triplets and set the reward for such event
             if Food_Reel.count("Durian") == 3:
                 winnings,win = Bet*3,True
             elif Food_Reel.count("Seeds") == 3:
@@ -376,11 +368,11 @@ class SlotMachine:
             elif Food_Reel.count("Taffy") == 3:
                 winnings,win = Bet*500,True
             
-            # Match 2
+            #Check if rot has come up, if not check for pairs. Reward if there are pairs and no rot.
             elif Food_Reel.count("Rot") == 0:
                 if Food_Reel.count("Durian") == 2:
                     winnings,win = Bet*1,True
-                if Food_Reel.count("Seeds") == 2:
+                elif Food_Reel.count("Seeds") == 2:
                     winnings,win = Bet*2,True
                 elif Food_Reel.count("Berries") == 2:
                     winnings,win = Bet*3,True
@@ -397,50 +389,51 @@ class SlotMachine:
                 elif Food_Reel.count("Taffy") == 2:
                     winnings,win = Bet*100,True
             
-                # Match TAFFY!
+                #If there is a single Taffy and no rot, have a bigger reward
                 elif Food_Reel.count("Taffy") == 1:
                     winnings, win = Bet*5,True
-                    
+                #Return money for getting lucky enough to not have rotten food.    
                 else:
                     winnings, win = Bet,True
 
-            cashText = ""
-
+            #If the player won, give him a chance for Jackpot
             if win:    
                 Cash += winnings
             
                 # Jackpot 1 in 450 chance of winning
                 jackpot_try = random.randrange(1,51,1)
                 jackpot_win = random.randrange(1,51,1)
+
+                # Player has won Jackpot, display event
                 if  jackpot_try  == jackpot_win:
                     Cash += Jackpot
                     cashText = "+" + str(winnings - Bet + Jackpot)
                     displayText = "You won the Jackpot! Here's $" + str(Jackpot)
                     Jackpot = 1000
                     self.displayLabel.configure(text=displayText)
-                    
+                # Player did not win, do not display event
                 elif jackpot_try != jackpot_win:
                     displayText = ""
                     self.displayLabel.configure(text=displayText)
                     cashText = "+" + str(winnings - Bet)
-
-                
+            #Player lost        
             else:
                 cashText = "-" + str(Bet)
                 displayText = ""
                 self.displayLabel.configure(text=displayText)
 
+            #Set amount player won/lost text
             self.winLabel.configure(text=cashText)
                 
-
+        #Update Label Numeric Values for Cash, Jackpot and Bet
         self.cashAmount["text"] = Cash
         self.jackpotAmount["text"] = Jackpot
-
         if Bet > Cash or Bet == 0:
             self.betAmount["text"] = "0000"
         else:
             self.betAmount["text"] = Bet
 
+        #Disable/Enable buttons based on current cash amount
         if Cash < 100:
             self.bet100Button.configure(state=DISABLED)
         if Cash < 250:
@@ -449,7 +442,6 @@ class SlotMachine:
             self.bet500Button.configure(state=DISABLED)
         if Cash < 1000:
             self.bet1000Button.configure(state=DISABLED)
-
         if Cash >= 100:
             self.bet100Button.configure(state=NORMAL)
         if Cash >= 250:
@@ -459,14 +451,15 @@ class SlotMachine:
         if Cash >= 1000:
             self.bet1000Button.configure(state=NORMAL)
 
+#Set window, so it can be quitted later on.
 window = Tk()
 
 def main():
+    #Create/Configure most of the window setting for the games and game itself
     window.title("Don't Starve Slot Machine")
     window.geometry('640x480+532+0')
     window.minsize(width=640,height=480)
     window.maxsize(width=640,height=480)
-
     mySlotMachine = SlotMachine(window)
     window.mainloop()
     
